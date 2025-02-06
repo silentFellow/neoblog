@@ -63,7 +63,24 @@
   * {
     @apply border-border m-0 p-0 box-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  .center {
+    @apply flex items-center justify-center;
+  }
+
+  .col {
+    @apply flex flex-col;
+  }
+
+  .between {
+    @apply flex justify-between;
+  }
+
+  .around {
+    @apply flex justify-around;
   }
 }
