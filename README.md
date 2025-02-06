@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Neoblog
+
+Neoblog is a simple yet powerful application for creating blogs. It is built using Next.js and includes features such as authentication, pre-built components, and rich text editing.
+
+## Features
+
+- **Next.js**: A React framework for building server-side rendered applications.
+- **Next-Auth**: Authentication for users to perform CRUD operations.
+- **Shadcn**: Pre-built components for faster development.
+- **TailwindCSS**: Utility-first CSS framework for styling.
+- **PostgreSQL**: Database for storing user credentials.
+- **Drizzle ORM**: ORM for interacting with the PostgreSQL database.
+- **Plate.js**: Rich text editor for simple users.
+- **Markdown**: Fine-grained control for advanced users.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js
+- PostgreSQL
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/yourusername/neoblog.git
+   cd neoblog
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Set up environment variables:
+   Create a `.env` file in the root directory and add the following:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```env
+   DATABASE_URL=your_postgresql_database_url
+   NEXTAUTH_URL=your_nextauth_url
+   NEXTAUTH_SECRET=your_nextauth_secret
+   ```
 
-## Deploy on Vercel
+4. Run database migrations:
+   ```bash
+   npx drizzle-kit migrate
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Running the Application
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+2. Open your browser and navigate to `http://localhost:3000`.
+
+## Usage
+
+- Users need to log in with Next-Auth to perform any CRUD operations.
+- Simple users can use the Plate.js rich text editor.
+- Advanced users can use Markdown for fine-grained control.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
