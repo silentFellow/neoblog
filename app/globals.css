@@ -64,6 +64,10 @@
     @apply border-border m-0 p-0 box-border;
   }
 
+  full {
+    @apply w-full h-full;
+  }
+
   body {
     @apply bg-background text-foreground;
   }

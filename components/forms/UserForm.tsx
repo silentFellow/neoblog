@@ -20,12 +20,18 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { Label } from "../ui/label";
 import { createUser } from "@/lib/actions/user.actions";
+import { useObject } from "@/hooks";
+import { providers } from "@/constants";
 
 const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [flow, setFlow] = useObject({
+    credSubmit: false,
+    providerSubmit: false,
+  });
+  const isSubmitting = flow.credSubmit || flow.providerSubmit;
+
   const router = useRouter();
 
   const form = useForm({
@@ -46,9 +52,9 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
           },
   });
 
-  const onSubmit = async (value: z.infer<typeof userSigninValidation>) => {
+  const onCredSubmit = async (value: z.infer<typeof userSigninValidation>) => {
     try {
-      setIsSubmitting(true);
+      setFlow("credSubmit", true);
 
       if (type == "login") {
         const res = await signIn("credentials", {
@@ -72,7 +78,7 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
       console.log(`Error loging in: ${error.message}`);
       throw new Error(error.message);
     } finally {
-      setIsSubmitting(false);
+      setFlow("credSubmit", false);
     }
   };
 
@@ -80,7 +86,7 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(async (value) => {
-          toast.promise(onSubmit(value), {
+          toast.promise(onCredSubmit(value), {
             loading: type === "login" ? "Signing in..." : "Creating user...",
             success:
               type === "login"
@@ -89,7 +95,7 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
             error: (err: any) => `${err.message}`,
           });
         })}
-        className="flex flex-col justify-start gap-6 w-full"
+        className="flex flex-col justify-start gap-4 w-full"
       >
         <FormField
           control={form.control}
@@ -187,9 +193,26 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
         )}
 
         <Button type="submit" className="bg-black" disabled={isSubmitting}>
-          {type === "login" && (isSubmitting ? "Logging in..." : "Login")}
-          {type === "sign-up" && (isSubmitting ? "Creating user..." : "Signup")}
+          {type === "login" && (flow.credSubmit ? "Logging in..." : "Login")}
+          {type === "sign-up" &&
+            (flow.credSubmit ? "Creating user..." : "Signup")}
         </Button>
+
+        <span className="text-center">or</span>
+
+        <div className="flex items-center justify-center gap-2">
+          {providers.map((provider) => (
+            <Button
+              key={provider.id}
+              onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              type="button"
+              className="w-full bg-black"
+              disabled={isSubmitting}
+            >
+              {provider.name}
+            </Button>
+          ))}
+        </div>
       </form>
     </Form>
   );

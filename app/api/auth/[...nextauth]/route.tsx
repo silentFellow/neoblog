@@ -1,9 +1,12 @@
+import { providers } from "@/constants";
 import { fetchUser } from "@/lib/actions/user.actions";
 import connectToDb from "@/lib/drizzle";
 import { users } from "@/lib/drizzle/schema";
 import { eq } from "drizzle-orm";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   pages: { signIn: "/sign-in" },
@@ -25,6 +28,9 @@ export const authOptions: NextAuthOptions = {
             throw new Error("No user found");
           }
 
+          if (userResponse.data.providerLogin)
+            throw new Error("Invalid login method");
+
           const user = userResponse.data;
           if (user.password === null) {
             throw new Error("Wrong authentication method");
@@ -38,6 +44,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error(error.message);
         }
       },
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID || "",
+      clientSecret: process.env.GITHUB_SECRET || "",
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
 
@@ -70,6 +84,36 @@ export const authOptions: NextAuthOptions = {
       };
     },
     async signIn({ user, account }) {
+      // provider login
+      if (
+        account &&
+        providers.map((provider) => provider.id).includes(account?.provider)
+      ) {
+        try {
+          const db = await connectToDb();
+          const id: string = user.id;
+
+          const existingUser = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, id));
+
+          if (existingUser.length === 0) {
+            await db.insert(users).values({
+              id,
+              username: user.name || "",
+              providerLogin: true,
+            });
+          }
+
+          return true;
+        } catch (error: unknown) {
+          console.error(error);
+          return false;
+        }
+      }
+
+      // credentials login
       try {
         const db = await connectToDb();
         if (!account) throw new Error("No account found");
@@ -79,6 +123,7 @@ export const authOptions: NextAuthOptions = {
           .select()
           .from(users)
           .where(eq(users.id, id));
+
         if (existingUser.length === 0) {
           await db.insert(users).values({
             id,

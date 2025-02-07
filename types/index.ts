@@ -8,6 +8,7 @@ export interface User {
   id: string;
   username: string;
   password: string | null;
+  providerLogin: boolean;
 }
 
 export interface Session {

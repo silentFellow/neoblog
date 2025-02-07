@@ -1,5 +1,5 @@
 {
-  "id": "3698e042-806e-4c31-890a-024df6714dab",
+  "id": "0728a2f8-194b-43ac-af68-ba5abea31ecb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,10 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "default": "'0730cd39-c494-4aab-be9f-f043c1c345c1'"
         },
         "name": {
           "name": "name",
@@ -26,6 +26,13 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
+        },
+        "provider_login": {
+          "name": "provider_login",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         }
       },
       "indexes": {},
