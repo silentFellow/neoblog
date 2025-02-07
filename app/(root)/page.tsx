@@ -6,7 +6,6 @@ import Link from "next/link";
 
 const Home = async () => {
   const user: Session | null = await getServerSession(authOptions);
-  console.log(user);
 
   return (
     <section className="col">
