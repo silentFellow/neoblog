@@ -7,28 +7,46 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "cd ./lib/drizzle && npx tsx migrate.ts",
+    "db:seed": "cd ./lib/drizzle/sample && npx tsx seeding.ts",
+    "db:clean": "cd ./lib/drizzle/sample && npx tsx clean.ts"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write ."
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.741.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.2",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
+    "next-auth": "^4.24.11",
+    "next-themes": "^0.4.4",
+    "pg": "^8.13.1",
+    "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "sonner": "^1.7.4",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@next/eslint-plugin-next": "^15.1.6",
     "@types/node": "^20",
+    "@types/pg": "^8.11.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "eslint-plugin-react-hooks": "^5.1.0",
@@ -37,6 +55,7 @@
     "postcss": "^8",
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
