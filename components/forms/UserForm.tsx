@@ -24,6 +24,7 @@ import { Label } from "../ui/label";
 import { createUser } from "@/lib/actions/user.actions";
 import { useObject } from "@/hooks";
 import { providers } from "@/constants";
+import Image from "next/image";
 
 const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
   const [flow, setFlow] = useObject({
@@ -204,12 +205,21 @@ const UserForm = ({ type }: { type: "login" | "sign-up" }) => {
           {providers.map((provider) => (
             <Button
               key={provider.id}
-              onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              onClick={() => {
+                setFlow("providerSubmit", true);
+                signIn(provider.id, { callbackUrl: "/" });
+              }}
               type="button"
-              className="w-full bg-black"
+              className="w-full bg-black gap-3"
               disabled={isSubmitting}
             >
-              {provider.name}
+              <Image
+                src={provider.icon}
+                alt={provider.name}
+                height={18}
+                width={18}
+              />
+              <p className="text-lg font-extrabold">{provider.name}</p>
             </Button>
           ))}
         </div>
