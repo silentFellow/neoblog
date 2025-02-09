@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
-import { AIChatPlugin } from "@udecode/plate-ai/react";
 import { BlockquotePlugin } from "@udecode/plate-block-quote/react";
 import { HEADING_KEYS } from "@udecode/plate-heading";
 import { IndentListPlugin } from "@udecode/plate-indent-list/react";
@@ -26,11 +25,8 @@ import {
   ContextMenuTrigger,
 } from "./context-menu";
 
-type Value = "askAI" | null;
-
 export function BlockContextMenu({ children }: { children: React.ReactNode }) {
   const { api, editor } = useEditorPlugin(BlockMenuPlugin);
-  const [value, setValue] = useState<Value>(null);
   const isTouch = useIsTouchDevice();
 
   const handleTurnInto = useCallback(
@@ -98,22 +94,9 @@ export function BlockContextMenu({ children }: { children: React.ReactNode }) {
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           editor.getApi(BlockSelectionPlugin).blockSelection.focus();
-
-          if (value === "askAI") {
-            editor.getApi(AIChatPlugin).aiChat.show();
-          }
-
-          setValue(null);
         }}
       >
         <ContextMenuGroup>
-          <ContextMenuItem
-            onClick={() => {
-              setValue("askAI");
-            }}
-          >
-            Ask AI
-          </ContextMenuItem>
           <ContextMenuItem
             onClick={() => {
               editor
