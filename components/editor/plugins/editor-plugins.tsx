@@ -94,8 +94,4 @@ export const editorPlugins = [
   DocxPlugin,
   MarkdownPlugin.configure({ options: { indentList: true } }),
   JuicePlugin,
-
-  // UI
-  FixedToolbarPlugin,
-  FloatingToolbarPlugin,
 ];

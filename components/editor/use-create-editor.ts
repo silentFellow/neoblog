@@ -95,8 +95,15 @@ import { TableElement } from "@/components/plate-ui/table-element";
 import { TableRowElement } from "@/components/plate-ui/table-row-element";
 import { TocElement } from "@/components/plate-ui/toc-element";
 import { ToggleElement } from "@/components/plate-ui/toggle-element";
+import { EditorState } from "@/types";
 
-export const useCreateEditor = () => {
+export const useCreateEditor = ({
+  initialValue,
+  editable,
+}: {
+  initialValue: EditorState;
+  editable: boolean;
+}) => {
   return usePlateEditor({
     override: {
       components: withPlaceholders({
@@ -147,7 +154,10 @@ export const useCreateEditor = () => {
         [VideoPlugin.key]: MediaVideoElement,
       }),
     },
-    plugins: [...editorPlugins, FixedToolbarPlugin, FloatingToolbarPlugin],
-    value: [],
+    plugins: [
+      ...editorPlugins,
+      ...(editable ? [FixedToolbarPlugin, FloatingToolbarPlugin] : []),
+    ],
+    value: initialValue,
   });
 };

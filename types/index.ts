@@ -1,3 +1,6 @@
+import { Value } from "@udecode/plate";
+import { PlateEditor } from "@udecode/plate/react";
+
 export interface Response<T = undefined> {
   message: string;
   status: number;
@@ -9,14 +12,15 @@ export interface User {
   username: string;
   password: string | null;
   providerLogin: boolean;
+  profileImage: string;
 }
 
 export interface Session {
-  user: {
-    name?: string;
-    email?: string;
-    image?: string;
-    id: string;
-    username: string;
-  };
+  id: string;
 }
+
+export type EditorState =
+  | string
+  | Value
+  | ((editor: PlateEditor) => Value)
+  | undefined;

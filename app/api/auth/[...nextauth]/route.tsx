@@ -23,7 +23,10 @@ export const authOptions: NextAuthOptions = {
         if (!credentials || !credentials.username || !credentials.password)
           throw new Error("No credentials provided");
         try {
-          const userResponse = await fetchUser(credentials.username);
+          const userResponse = await fetchUser({
+            field: "username",
+            identity: credentials.username,
+          });
           if (!userResponse || !userResponse.data) {
             throw new Error("No user found");
           }
@@ -58,29 +61,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user && account) {
-        const id: string = user.id;
-        const db = await connectToDb();
-        const existingUser = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, id));
-
-        return {
-          ...token,
-          id: user.id,
-          username: existingUser[0].username,
-        };
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       return {
         ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          username: token.username,
-        },
+        id: token.id,
       };
     },
     async signIn({ user, account }) {
@@ -102,6 +90,7 @@ export const authOptions: NextAuthOptions = {
             await db.insert(users).values({
               id,
               username: user.name || "",
+              profileImage: user.image || "",
               providerLogin: true,
             });
           }

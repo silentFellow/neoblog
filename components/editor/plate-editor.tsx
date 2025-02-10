@@ -8,15 +8,29 @@ import { Plate } from "@udecode/plate/react";
 
 import { useCreateEditor } from "@/components/editor/use-create-editor";
 import { Editor, EditorContainer } from "@/components/plate-ui/editor";
+import { EditorState } from "@/types";
 
-export function PlateEditor() {
-  const editor = useCreateEditor();
+export function PlateEditor({
+  editable = true,
+  initialValue = [],
+  onChange,
+}: {
+  editable?: boolean;
+  initialValue?: EditorState;
+  onChange?: (v: EditorState) => void;
+}) {
+  const editor = useCreateEditor({ initialValue, editable });
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <Plate editor={editor}>
-        <EditorContainer>
-          <Editor variant="fullWidth" />
+      <Plate
+        editor={editor}
+        onChange={(v) => {
+          if (onChange) onChange(v.value);
+        }}
+      >
+        <EditorContainer className="border-2 border-black">
+          <Editor variant="fullWidth" />{" "}
         </EditorContainer>
       </Plate>
     </DndProvider>
