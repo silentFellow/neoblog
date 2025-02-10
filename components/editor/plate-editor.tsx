@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -13,24 +11,24 @@ import { EditorState } from "@/types";
 export function PlateEditor({
   editable = true,
   initialValue = [],
-  onChange,
+  changeRef,
 }: {
   editable?: boolean;
   initialValue?: EditorState;
-  onChange?: (v: EditorState) => void;
+  changeRef: any;
 }) {
   const editor = useCreateEditor({ initialValue, editable });
 
+  // Update changeRef.current whenever the editor state changes
+  const handleChange = (newState: any) => {
+    changeRef.current = newState;
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <Plate
-        editor={editor}
-        onChange={(v) => {
-          if (onChange) onChange(v.value);
-        }}
-      >
-        <EditorContainer className="border-2 border-black">
-          <Editor variant="fullWidth" />{" "}
+      <Plate editor={editor} onChange={handleChange}>
+        <EditorContainer className="border-2 border-black max-h-[27rem]">
+          <Editor variant="fullWidth" />
         </EditorContainer>
       </Plate>
     </DndProvider>

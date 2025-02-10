@@ -15,6 +15,48 @@ export interface User {
   profileImage: string;
 }
 
+export interface Blogs {
+  hasNext: boolean;
+  blogs: {
+    id: string;
+    title: string;
+    content: string;
+    thumbnail: string;
+    createdAt: string;
+    updatedAt: string;
+    author: {
+      id: string;
+      username: string;
+    };
+    tags: {
+      id: string;
+      name: string;
+    }[];
+  }[];
+}
+
+export interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  thumbnail: string;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: string;
+    username: string;
+  };
+  tags: {
+    id: string;
+    name: string;
+  }[];
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+}
+
 export interface Session {
   id: string;
 }

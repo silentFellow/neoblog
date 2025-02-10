@@ -1,16 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { Session } from "@/types";
+import { Blogs, Session, Response } from "@/types";
 import Link from "next/link";
 import Profile from "@/components/home/profile";
 import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchBlogs } from "@/lib/actions/blog.actions";
+import { redirect } from "next/navigation";
 
 const Home = async () => {
-  const session: Session | null = await getServerSession(authOptions);
+  const [session, blogs] = (await Promise.all([
+    await getServerSession(authOptions),
+    await fetchBlogs({ pageNumber: 1, pageSize: 10 }),
+  ])) as [Session | null, Response<Blogs>];
+
   const user = session
     ? await fetchUser({ field: "id", identity: session.id })
     : null;
+
+  if (blogs.status === 404) redirect("/?page-number=1");
+  if (blogs.status !== 200 || !blogs.data) return null;
 
   return (
     <section className="col">
