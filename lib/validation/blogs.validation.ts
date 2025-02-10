@@ -9,7 +9,10 @@ export const tagValidation = z.object({
 
 export const blogValidation = z.object({
   author: z.string().min(3, "mininmum 3 character long"),
-  tags: z.array(z.string()).min(1, "atleast one tag is required"),
+  tags: z
+    .array(z.string())
+    .min(1, "atleast one tag is required")
+    .max(5, "maximum 5 tags allowed"),
   title: z
     .string()
     .min(3, "mininmum 3 character long")
