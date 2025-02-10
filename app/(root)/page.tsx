@@ -7,11 +7,24 @@ import Profile from "@/components/home/profile";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { fetchBlogs } from "@/lib/actions/blog.actions";
 import { redirect } from "next/navigation";
+import Pagination from "@/components/Pagination";
+import Image from "next/image";
+import { JetBrains_Mono } from "next/font/google";
 
-const Home = async () => {
+const lobster = JetBrains_Mono({ subsets: ["latin"], weight: "800" });
+
+const Home = async (props: {
+  searchParams: Promise<{ "page-number": number; "page-size"?: number }>;
+}) => {
+  const searchParams = await props.searchParams;
+  if (!searchParams["page-number"]) redirect("?page-number=1");
+
   const [session, blogs] = (await Promise.all([
     await getServerSession(authOptions),
-    await fetchBlogs({ pageNumber: 1, pageSize: 10 }),
+    await fetchBlogs({
+      pageNumber: searchParams["page-number"],
+      pageSize: searchParams["page-size"] || 10,
+    }),
   ])) as [Session | null, Response<Blogs>];
 
   const user = session
@@ -24,7 +37,12 @@ const Home = async () => {
   return (
     <section className="col">
       <div className="between">
-        <h1 className="text-2xl font-bold">NeoBlog</h1>
+        <header className="center gap-3">
+          <div className="relative h-9 w-9">
+            <Image src="/logo.png" alt="neoblog" fill />
+          </div>
+          <h1 className={`text-3xl font-bold ${lobster.className}`}>NeoBlog</h1>
+        </header>
 
         {session && user && user.data ? (
           <Profile user={user.data} />
@@ -34,6 +52,12 @@ const Home = async () => {
           </Link>
         )}
       </div>
+
+      <Pagination
+        path="/"
+        pageNumber={searchParams["page-number"]}
+        isNext={blogs?.data?.hasNext}
+      />
     </section>
   );
 };
