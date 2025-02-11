@@ -13,10 +13,15 @@ const Search = () => {
   return (
     <>
       <Input
+        autoFocus
         type="search"
         placeholder="Search for..."
         className="no-focus roounded-md w-[30rem]"
         onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key.toLowerCase() === "enter")
+            router.push(`/?search=${search}`);
+        }}
       />
 
       <Button onClick={() => router.push(`/?search=${search}`)}>
