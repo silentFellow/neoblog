@@ -30,7 +30,7 @@ const main = async () => {
     await Promise.all([
       db.insert(users).values({
         username: "neouser",
-        password: "noepwd",
+        password: "neopwd",
       }),
     ]);
 
