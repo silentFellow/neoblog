@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Blog } from "@/types";
-import Image from "next/image";
-import { Button } from "../ui/button";
-import DeleteBlog from "../buttons/DelteBlog";
+import { Button } from "@/components/ui/button";
+import DeleteBlog from "@/components/buttons/DelteBlog";
 import { FaReadme } from "react-icons/fa";
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import ImageLoader from "../loaders/ImageLoader";
 
 const BlogCard = ({
   userId,
@@ -19,8 +18,8 @@ const BlogCard = ({
   return (
     <article className="h-48 w-full bg-[#f5f5f5] shadow-md flex gap-6 p-2 rounded-md">
       <section className="center">
-        <div className="relative h-36 w-36">
-          <Image src={blog.thumbnail} alt={blog.title} fill />
+        <div className="relative h-44 w-44">
+          <ImageLoader src={blog.thumbnail} alt={blog.title} fill />
         </div>
       </section>
 

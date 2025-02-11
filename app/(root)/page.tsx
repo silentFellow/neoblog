@@ -11,8 +11,6 @@ import Pagination from "@/components/Pagination";
 import Image from "next/image";
 import { JetBrains_Mono } from "next/font/google";
 import BlogCard from "@/components/cards/BlogCard";
-import { Input } from "@/components/ui/input";
-import { FaSearch } from "react-icons/fa";
 import { RiResetRightLine } from "react-icons/ri";
 import { joinQuery } from "@/lib/utils";
 import Search from "@/components/Search";
@@ -95,7 +93,7 @@ const Home = async (props: {
         {searchParams.search && (
           <h2 className="font-bold text-xl">
             Search results for:{" "}
-            <span className="text-lg">"{searchParams.search}"</span>
+            <span className="text-lg">&quot;{searchParams.search}&quot;</span>
           </h2>
         )}
 

@@ -69,6 +69,17 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
     blog: false,
   });
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
+  const defaultTags = edit
+    ? editData?.tags.reduce((acc: { label: string; value: string }[], tag) => {
+        const foundTag = tags.find((t) => t.id === tag);
+        return foundTag
+          ? acc.concat({
+              label: foundTag.name,
+              value: foundTag.id,
+            })
+          : acc;
+      }, [])
+    : [];
 
   const { startUpload } = useUploadThing("editorUploader");
 
@@ -82,7 +93,7 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
     defaultValues: {
       author: user.id,
       title: edit ? editData?.title || "" : "",
-      content: edit ? JSON.stringify(editData?.content) || "" : "",
+      content: "", // only manged by editor
       thumbnail: edit ? editData?.thumbnail || "" : "",
       tags: edit ? editData?.tags || [] : [],
     },
@@ -124,10 +135,12 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
     if (!isValid) return;
 
     // validation of max image size
-    const fileSize = Number((files[0].size / 1024 / 1024).toFixed(2));
-    if (fileSize > 4) {
-      toast.error("Thumbnail too large");
-      return;
+    if (files.length > 0) {
+      const fileSize = Number((files[0].size / 1024 / 1024).toFixed(2));
+      if (fileSize > 4) {
+        toast.error("Thumbnail too large");
+        return;
+      }
     }
 
     if (isValid) {
@@ -229,8 +242,10 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
               className="space-y-6"
               onSubmit={blogForm.handleSubmit(async (value) => {
                 toast.promise(blogSubmit(value), {
-                  loading: "posting blogs...",
-                  success: "successfully posted blog",
+                  loading: edit ? "updating blogs..." : "posting blogs...",
+                  success: edit
+                    ? "successfully updated blog"
+                    : "successfully posted blog",
                   error: (err: any) => `${err.message}`,
                 });
               })}
@@ -305,6 +320,7 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
                     </FormLabel>
                     <div className="flex gap-4">
                       <MultipleSelector
+                        value={defaultTags}
                         options={tags.map((tag) => ({
                           label: tag.name,
                           value: tag.id,
@@ -420,7 +436,12 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
                   <FormItem className="col">
                     <FormControl>
                       <div className="full h-[27rem]">
-                        <PlateEditor changeRef={editorRef} />
+                        <PlateEditor
+                          changeRef={editorRef}
+                          initialValue={
+                            edit && JSON.parse(editData?.content || "")
+                          }
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -442,7 +463,13 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
                   disabled={isSubmitting.blog}
                   className="bg-black"
                 >
-                  {isSubmitting.blog ? "Posting Blog..." : "Post Blog"}
+                  {edit
+                    ? isSubmitting.blog
+                      ? "Updating Blog..."
+                      : "Update Blog"
+                    : isSubmitting.blog
+                      ? "Posting Blog..."
+                      : "Post Blog"}
                 </Button>
               </div>
             </form>
