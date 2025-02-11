@@ -100,7 +100,9 @@ const Home = async (props: {
         )}
 
         {blogRes.data.blogs.length < 1 ? (
-          <h2 className="text-center mt-3 text-[#f5f5f5]">No Blogs found...</h2>
+          <h2 className="text-center mt-3 text-[rgb(33,33,33)]">
+            No Blogs found...
+          </h2>
         ) : (
           <div className="my-6 grid gap-3 grid-cols-1 md:grid-cols-2">
             {blogRes.data.blogs.map((blog: Blog, idx) => (

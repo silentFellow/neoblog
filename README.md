@@ -13,6 +13,50 @@ Neoblog is a simple yet powerful application for creating blogs. It is built usi
 - **Plate.js**: Rich text editor for simple users.
 - **Markdown**: Fine-grained control for advanced users.
 
+## Screenshots
+
+Here are some screenshots of the application:
+
+### Sign-up
+
+![Sign up](./screenshots/sign-up.png)
+
+### Sign-in
+
+![Sign in](./screenshots/sign-in.png)
+
+### No Blogs Found
+
+![No Blogs Found](./screenshots/no-blogs-found.png)
+
+### Home with Blogs
+
+![Home with Blogs](./screenshots/home-with-blogs.png)
+
+### Create Tag
+
+![Create Tag](./screenshots/create-tag.png)
+
+### Create Blog Metadata
+
+![Create Blog Metadata](./screenshots/create-blog-metadata.png)
+
+### Create Blog Content
+
+![Create Blog Content](./screenshots/create-blog-content.png)
+
+### Delete Blog
+
+![Delete Blog](./screenshots/delete-blog.png)
+
+### Read Blog
+
+![Read Blog](./screenshots/read-blog.png)
+
+### Update Profile
+
+![Update Profile](./screenshots/update-profile.png)
+
 ## Getting Started
 
 ### Prerequisites
@@ -36,17 +80,27 @@ Neoblog is a simple yet powerful application for creating blogs. It is built usi
    ```
 
 3. Set up environment variables:
-   Create a `.env` file in the root directory and add the following:
+   Create a `.env.local` file in the root directory and add the following:
 
-   ```env
-   DATABASE_URL=your_postgresql_database_url
-   NEXTAUTH_URL=your_nextauth_url
-   NEXTAUTH_SECRET=your_nextauth_secret
+   ```env.local
+   DATABASE_URL = "your-database-url"
+   NEXTAUTH_URL = "your-nextauth-url/http://localhost:3000"
+   AUTH_SECRET = "your-auth-secret"
+   NEXTAUTH_SECRET = "your-nextauth-secret"
+   GITHUB_ID = "your-gihub-id"
+   GITHUB_SECRET = "your-github-secret"
+   GOOGLE_CLIENT_ID = "your-google-id"
+   GOOGLE_CLIENT_SECRET = "your-google-client"
+   UPLOADTHING_TOKEN = "your-uploadthing-token"
    ```
 
 4. Run database migrations:
+
    ```bash
    npx drizzle-kit migrate
+   npm run db:generate
+   npm run db:migrate
+   npm run db:seed # change the usernam and password in ./lib/drizzle/sample/seeding.ts
    ```
 
 ### Running the Application

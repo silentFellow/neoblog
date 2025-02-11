@@ -29,8 +29,8 @@ const main = async () => {
 
     await Promise.all([
       db.insert(users).values({
-        username: "silentFellow",
-        password: "silentFellow",
+        username: "neouser",
+        password: "noepwd",
       }),
     ]);
 

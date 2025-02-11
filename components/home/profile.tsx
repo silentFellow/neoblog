@@ -135,8 +135,11 @@ const Profile = ({ user }: { user: User }) => {
                 you&apos;re done.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 bg-[rgb(33,33,33)] rounded-md p-3">
-              <Avatar className="full" id="profile-image-update">
+            <div className="flex gap-3 bg-[#f5f5f5] rounded-md p-3">
+              <Avatar
+                className="full border border-[rgb(33,33,33)]"
+                id="profile-image-update"
+              >
                 <AvatarImage
                   src={updateProfileImage.image as string}
                   alt={user.username}
