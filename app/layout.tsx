@@ -24,7 +24,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Provider session={session}>
-          <main className="h-screen max-h-screen w-screen max-w-7xl mx-auto p-9 max-sm:p-6 overflow-auto">
+          <main className="min-h-screen w-screen max-w-7xl mx-auto p-9 max-sm:p-6">
             {children}
             <Toaster expand={false} />
           </main>

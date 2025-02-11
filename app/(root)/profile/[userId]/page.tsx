@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { Blogs, Session, Response, Blog } from "@/types";
+import { Blogs, Session, Response, Blog, User } from "@/types";
 import Link from "next/link";
 import Profile from "@/components/home/profile";
 import { fetchUser } from "@/lib/actions/user.actions";
@@ -17,43 +17,58 @@ import Search from "@/components/Search";
 
 const jetbrains_mono = JetBrains_Mono({ subsets: ["latin"], weight: "800" });
 
-const Home = async (props: {
-  searchParams: Promise<{
-    "page-number": number;
-    "page-size"?: number;
-    author?: string;
-    tag?: string;
-    search?: string;
-  }>;
+interface Params {
+  userId: string;
+}
+
+interface SearchParams {
+  "page-number": number;
+  "page-size"?: number;
+  tag?: string;
+  search?: string;
+}
+
+const UserBlogs = async (props: {
+  params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
 }) => {
-  const searchParams = await props.searchParams;
+  const [params, searchParams] = (await Promise.all([
+    await props.params,
+    await props.searchParams,
+  ])) as [Params, SearchParams];
 
   const query = joinQuery({
     "page-number": searchParams["page-number"] || "1",
     "page-size": searchParams["page-size"] || "10",
-    author: searchParams["author"],
     tag: searchParams["tag"],
     search: searchParams["search"],
   });
-  const currentQuery = joinQuery(searchParams);
+  const currentQuery = joinQuery(
+    searchParams as unknown as Record<
+      string,
+      string | number | null | undefined
+    >,
+  );
   if (query !== currentQuery) redirect(query);
 
-  const [session, blogRes] = (await Promise.all([
+  const [session, profileRes, blogRes] = (await Promise.all([
     await getServerSession(authOptions),
+    await fetchUser({ field: "id", identity: params.userId }),
     await fetchBlogs({
       pageNumber: searchParams["page-number"],
       pageSize: searchParams["page-size"] || 10,
-      author: searchParams.author || "",
+      author: params.userId,
       tag: searchParams.tag || "",
       search: searchParams.search || "",
     }),
-  ])) as [Session | null, Response<Blogs>];
+  ])) as [Session | null, Response<User>, Response<Blogs>];
 
   const user = session
     ? await fetchUser({ field: "id", identity: session.id })
     : null;
 
-  if (blogRes.status === 404) redirect("/?page-number=1");
+  if (profileRes.status !== 200) redirect("/");
+  if (blogRes.status === 404) redirect("?page-number=1");
   if (blogRes.status !== 200 || !blogRes.data) return null;
 
   return (
@@ -83,7 +98,7 @@ const Home = async (props: {
       <div className="my-4 full flex gap-3">
         <Search />
 
-        <Link href="/">
+        <Link href={`/profile/${params.userId}`}>
           <Button>
             <RiResetRightLine />
             Reset
@@ -126,4 +141,4 @@ const Home = async (props: {
   );
 };
 
-export default Home;
+export default UserBlogs;

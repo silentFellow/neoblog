@@ -22,7 +22,7 @@ const DeleteBlog = ({ blogId, path }: { blogId: string; path: string }) => {
       <AlertDialogTrigger asChild>
         <Button>
           <MdDelete />
-          Delete
+          <span className="max-lg:hidden">Delete</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

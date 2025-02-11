@@ -173,7 +173,7 @@ const Profile = ({ user }: { user: User }) => {
 
         <DropdownMenuItem
           className="text-md"
-          onClick={() => router.push(`/user-blogs/${user.id}`)}
+          onClick={() => router.push(`/profile/${user.id}`)}
         >
           <span className="text-2xl">
             <CgProfile />

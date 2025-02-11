@@ -234,7 +234,7 @@ const BlogForm = ({ user, tags, edit, editData }: Props) => {
 
   return (
     // container contains create tag and create blog
-    <div className="col items-center p-3">
+    <div className="full col items-center p-3">
       {phase === "metadata" ? (
         <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6 space-y-6">
           <Form {...blogForm}>

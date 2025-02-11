@@ -16,23 +16,27 @@ const BlogCard = ({
   path: string;
 }) => {
   return (
-    <article className="h-48 w-full bg-[#f5f5f5] shadow-md flex gap-6 p-2 rounded-md">
-      <section className="center">
-        <div className="relative h-44 w-44">
+    <article className="w-full bg-[#f5f5f5] shadow-md flex gap-4 md:gap-6 p-3 md:p-4 rounded-md">
+      {/* Image Section */}
+      <section className="flex justify-center md:justify-start">
+        <div className="relative h-28 w-28 lg:h-40 lg:w-40 rounded-md overflow-hidden">
           <ImageLoader src={blog.thumbnail} alt={blog.title} fill />
         </div>
       </section>
 
-      <section className="col w-full">
-        <div className="h-[70%] col gap-1">
-          <h3 className="font-extrabold text-xl text-clip">{blog.title}</h3>
+      {/* Content Section */}
+      <section className="flex flex-col w-full">
+        <div className="flex flex-col gap-2 flex-grow">
+          <h3 className="font-extrabold text-lg md:text-xl line-clamp-2">
+            {blog.title}
+          </h3>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2">
             {blog.tags.map((tag, idx) => (
               <Link
                 href={`/?page-number=1&tag=${tag.id}`}
                 key={idx}
-                className="text-xs text-light-1"
+                className="text-xs md:text-sm text-light-1"
               >
                 #{tag.name}
               </Link>
@@ -40,24 +44,25 @@ const BlogCard = ({
           </div>
         </div>
 
-        <section className="h-[20%] end gap-2">
+        {/* Buttons Section */}
+        <section className="flex flex-wrap gap-2 mt-2 md:mt-4 end">
           {blog.author.id === userId && (
             <DeleteBlog blogId={blog.id} path={path} />
           )}
 
           {blog.author.id === userId && (
             <Link href={`/edit-blog/${blog.id}`}>
-              <Button>
+              <Button className="flex items-center gap-1">
                 <FaEdit />
-                Edit
+                <span className="max-lg:hidden">Edit</span>
               </Button>
             </Link>
           )}
 
           <Link href={`/read-blog/${blog.id}`}>
-            <Button>
+            <Button className="flex items-center gap-1">
               <FaReadme />
-              Read
+              <span className="max-lg:hidden">Read</span>
             </Button>
           </Link>
         </section>
