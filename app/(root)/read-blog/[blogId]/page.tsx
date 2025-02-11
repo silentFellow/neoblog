@@ -20,7 +20,7 @@ const ReadBlog = async (props: { params: Promise<{ blogId: string }> }) => {
         <h2 className={`text-3xl ${jetbrain_mono.className}`}>{blog?.title}</h2>
         <div className="flex gap-2 items-center">
           <Link
-            href={`/?page-number=1&author=${blog?.author.id}`}
+            href={`/profile/${blog?.author.id}`}
             className="text-md text-light-1"
           >
             #{blog?.author.username}
@@ -38,7 +38,7 @@ const ReadBlog = async (props: { params: Promise<{ blogId: string }> }) => {
         </div>
       </div>
 
-      <div className="min-h-screen w-full" data-registry="plate">
+      <div className="mt-3 min-h-screen w-full" data-registry="plate">
         <PlateEditor
           editable={false}
           initialValue={JSON.parse(blog?.content || "")}
