@@ -1,6 +1,6 @@
 "use server";
 
-import { arrayOverlaps, eq, sql, count, desc } from "drizzle-orm";
+import { arrayOverlaps, eq, sql, count, desc, ilike, and } from "drizzle-orm";
 import { tags, blogs, users } from "@/lib/drizzle/schema";
 import connectToDb from "@/lib/drizzle";
 import { Blog, Blogs } from "@/types";
@@ -49,14 +49,32 @@ const createBlog = async (
 const fetchBlogs = async ({
   pageNumber,
   pageSize = 10,
+  author,
+  tag,
+  search,
 }: {
   pageNumber: number;
   pageSize?: number;
+  author?: string;
+  tag?: string;
+  search?: string;
 }): Promise<Response<Blogs>> => {
   try {
     const db = await connectToDb();
 
-    const totalRowsResult = await db.select({ total: count() }).from(blogs);
+    // just if(x) conditions.push(f(x))
+    const conditions = [
+      author && eq(blogs.author, author),
+      tag && arrayOverlaps(blogs.tags, [tag]),
+      search && ilike(blogs.title, `%${search}%`),
+    ].filter(Boolean);
+
+    // Get total count
+    const totalRowsResult = await db
+      .select({ total: count() })
+      .from(blogs)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
+
     const totalRows = totalRowsResult[0]?.total ?? 0;
 
     if (
@@ -77,6 +95,7 @@ const fetchBlogs = async ({
         },
       })
       .from(blogs)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(blogs.updatedAt))
       .offset(skipAmount)
       .limit(pageSize)
@@ -236,19 +255,31 @@ const updateBlog = async (
 };
 
 const fetchBlogsOnTags = async ({
-  id,
+  tagId,
   pageNumber,
   pageSize = 10,
+  search,
 }: {
-  id: string;
+  tagId: string;
   pageNumber: number;
   pageSize?: number;
+  search?: string;
 }): Promise<Response<Blogs>> => {
   try {
     const db = await connectToDb();
 
     const skipAmount = (pageNumber - 1) * pageSize;
-    const totalRowsResult = await db.select({ total: count() }).from(blogs);
+    const totalRowsResult = await db
+      .select({ total: count() })
+      .from(blogs)
+      .where(
+        search !== ""
+          ? ilike(
+              blogs.title,
+              `%${search}%` && arrayOverlaps(blogs.tags, [tagId]),
+            )
+          : arrayOverlaps(blogs.tags, [tagId]),
+      );
     const totalRows = totalRowsResult[0]?.total ?? 0;
 
     if (
@@ -270,7 +301,102 @@ const fetchBlogsOnTags = async ({
       .orderBy(desc(blogs.updatedAt))
       .offset(skipAmount)
       .limit(pageSize)
-      .where(arrayOverlaps(blogs.tags, [id]))
+      .where(
+        search !== ""
+          ? ilike(
+              blogs.title,
+              `%${search}%` && arrayOverlaps(blogs.tags, [tagId]),
+            )
+          : arrayOverlaps(blogs.tags, [tagId]),
+      )
+      .innerJoin(users, eq(blogs.author, users.id))
+      .leftJoin(tags, sql`${blogs.tags} && ARRAY[${tags.id}]::uuid[]`);
+
+    // Process the result to group tags for each blog
+    const processedBlogs = blogResult.reduce<Record<string, Blog>>(
+      (acc, row) => {
+        const blogId = row.blog.id;
+        if (!acc[blogId]) {
+          acc[blogId] = {
+            ...row.blog,
+            author: row.author,
+            tags: [],
+            createdAt: row.blog.createdAt.toISOString(),
+            updatedAt: row.blog.updatedAt.toISOString(),
+          };
+        }
+        if (row.tag) {
+          acc[blogId].tags.push(row.tag);
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const result = Object.values(processedBlogs);
+
+    const hasNext = skipAmount + pageSize < totalRows;
+
+    return {
+      message: "Blogs fetched successfully",
+      status: 200,
+      data: { hasNext, blogs: result },
+    };
+  } catch (error: any) {
+    console.error(`Error fetching blogs: ${error.message}`);
+    return { message: "Error fetching blogs", status: 500 };
+  }
+};
+
+const fetchBlogsOnAuthor = async ({
+  authorId,
+  pageNumber,
+  pageSize = 10,
+  search,
+}: {
+  authorId: string;
+  pageNumber: number;
+  pageSize?: number;
+  search?: string;
+}): Promise<Response<Blogs>> => {
+  try {
+    const db = await connectToDb();
+
+    const skipAmount = (pageNumber - 1) * pageSize;
+    const totalRowsResult = await db
+      .select({ total: count() })
+      .from(blogs)
+      .where(
+        search !== ""
+          ? ilike(blogs.title, `%${search}%` && eq(blogs.author, authorId))
+          : eq(blogs.author, authorId),
+      );
+    const totalRows = totalRowsResult[0]?.total ?? 0;
+
+    if (
+      Number(pageNumber) !== 1 &&
+      Math.ceil(totalRows / pageSize) < Number(pageNumber)
+    )
+      return { message: "No more blogs to fetch", status: 404 };
+
+    const blogResult = await db
+      .select({
+        blog: blogs,
+        tag: tags,
+        author: {
+          id: users.id,
+          username: users.username,
+        },
+      })
+      .from(blogs)
+      .orderBy(desc(blogs.updatedAt))
+      .offset(skipAmount)
+      .limit(pageSize)
+      .where(
+        search !== ""
+          ? ilike(blogs.title, `%${search}%` && eq(blogs.author, authorId))
+          : eq(blogs.author, authorId),
+      )
       .innerJoin(users, eq(blogs.author, users.id))
       .leftJoin(tags, sql`${blogs.tags} && ARRAY[${tags.id}]::uuid[]`);
 
@@ -316,5 +442,6 @@ export {
   fetchBlogs,
   fetchBlog,
   fetchBlogsOnTags,
+  fetchBlogsOnAuthor,
   deleteBlog,
 };
