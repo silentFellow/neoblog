@@ -83,6 +83,8 @@ const Profile = ({ user }: { user: User }) => {
 
       // @ts-expect-error - File type is checked above
       await uploadFile(updateProfileImage.file);
+
+      setFlow("imageDropdownOpen", false);
       setFlow("dropdownOpen", false);
     } catch (error: any) {
       console.log(`Error updating profile image: ${error.message}`);
